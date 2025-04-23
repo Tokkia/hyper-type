@@ -19,7 +19,7 @@ app.use(express.json());
 
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);
-  // Your multiplayer logic here
+  // multiplayer logic here
 });
 
 mongoose.connect(process.env.MONGO_URI, {
