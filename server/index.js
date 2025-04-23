@@ -14,8 +14,14 @@ const io = new Server(server, {
   }
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }));
 app.use(express.json());
+
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);
@@ -27,5 +33,5 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 }).then(() => {
   console.log('MongoDB connected');
-  server.listen(5000, () => console.log('Server running on port 5000'));
+  server.listen(5001, () => console.log('Server running on port 5001'));
 }).catch(err => console.log(err));
