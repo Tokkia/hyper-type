@@ -1,19 +1,14 @@
 const Result = require('../models/Result');
 
-exports.saveResult = async (req, res) => {
+// GET results for a user
+exports.getResultsByUser = async (req, res) => {
   try {
-    const { username, wpm, accuracy, userId } = req.body;
+    const { userId } = req.params;
 
-    if (!username || wpm == null || accuracy == null) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const result = new Result({ username, wpm, accuracy, userId });
-    await result.save();
-
-    res.status(201).json({ message: 'Result saved successfully' });
+    const results = await Result.find({ userId }).sort({ timestamp: 1 }); // sort by time
+    res.json(results);
   } catch (err) {
-    console.error('Error saving result:', err);
+    console.error('Error fetching user results:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
