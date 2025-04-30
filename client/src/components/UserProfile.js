@@ -1,6 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Line } from 'react-chartjs-2'; // assuming you're using chart.js
+import { Line } from 'react-chartjs-2';
+
+// ✅ Chart.js v3+ requires manual registration
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const UserProfile = ({ userId, username }) => {
   const [results, setResults] = useState([]);

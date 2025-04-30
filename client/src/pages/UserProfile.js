@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import UserProfileComponent from '../components/UserProfile';
 
-export default function UserProfile() {
-  
-    return (
-      <div>
-        
-      </div>
-    );
-  }
+const UserProfile = () => {
+  return (
+    <UserProfileComponent userId="test-user" username="guest_user" />
+  );
+};
+
+export default UserProfile;
