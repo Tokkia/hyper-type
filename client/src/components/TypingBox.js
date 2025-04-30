@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import sentencesData from '../assets/sentences.json';
+import { MdReplay } from "react-icons/md";
 
 export default function TypingBox() {
   const [sentence, setSentence] = useState('');
@@ -39,17 +40,17 @@ export default function TypingBox() {
         {word.split('').map((char, idx) => {
           const expectedChar = char;
           const typedChar = typedChars[charIndex];
-          let charStyle = 'text-gray-400'; 
+          let charStyle = 'text-accent'; 
           let displayChar = char;
 
           if (typedChar != null) {
             if (typedChar === expectedChar) {
-              charStyle = 'text-gray-100'; 
+              charStyle = 'text-accentText'; 
             } else {
               if (expectedChar === ' ') {
                 displayChar = '_';
               }
-              charStyle = 'text-red-500'; 
+              charStyle = 'text-red-400'; 
             }
           }
 
@@ -67,14 +68,14 @@ export default function TypingBox() {
             const expectedChar = ' ';
             const typedChar = typedChars[charIndex];
             let spaceDisplay = ' ';
-            let spaceStyle = 'text-gray-400';
+            let spaceStyle = 'text-overlay';
 
             if (typedChar != null) {
               if (typedChar === expectedChar) {
-                spaceStyle = 'text-gray-100';
+                spaceStyle = 'text-accent';
               } else {
                 spaceDisplay = '_';
-                spaceStyle = 'text-red-500';
+                spaceStyle = 'text-red-400';
               }
             }
 
@@ -93,7 +94,7 @@ export default function TypingBox() {
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="max-w-4xl mx-auto mt-10 p-6 rounded bg-gray-800 text-2xl flex flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap"
+        className="max-w-4xl mx-auto mt-10 p-6 rounded bg-overlay text-2xl flex flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap"
         style={{ minHeight: '150px' }}
       >
         {renderSentence()}
@@ -102,9 +103,9 @@ export default function TypingBox() {
       
       <button
         onClick={generateRandomSentence}
-        className="mt-6 px-6 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
+        className="mt-6 px-6 py-2 bg-background text-accentText hover:bg-gray-700"
       >
-        Reset
+        <MdReplay color="accentText" size={25}/>
       </button>
     </div>
   );
