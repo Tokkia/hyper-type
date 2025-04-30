@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculateWpmAndAccuracy } from '../utils/calculateMetrics';
+import { submitResult } from '../api/submitResult';
 
-const WpmResults = ({ typedText, referenceText, durationInSeconds, username }) => {
+const WpmResults = ({ typedText, referenceText, durationInSeconds, username, userId = null }) => {
   const { wpm, accuracy } = calculateWpmAndAccuracy(typedText, referenceText, durationInSeconds);
+
+  useEffect(() => {
+    submitResult(username, wpm, accuracy, userId);
+  }, [username, wpm, accuracy, userId]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
