@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Home() {
   return (
@@ -8,4 +8,3 @@ export default function Home() {
     </div>
   );
 }
-

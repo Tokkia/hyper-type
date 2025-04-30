@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function UserProfile() {
+export default function RaceStarting() {
   return (
     <div>
-      
+    
     </div>
   );
 }
