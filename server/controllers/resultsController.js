@@ -1,15 +1,14 @@
 const Result = require('../models/Result');
 
-// Save a new typing result
 exports.saveResult = async (req, res) => {
   try {
-    const { username, wpm, accuracy } = req.body;
+    const { username, wpm, accuracy, userId } = req.body;
 
     if (!username || wpm == null || accuracy == null) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const result = new Result({ username, wpm, accuracy });
+    const result = new Result({ username, wpm, accuracy, userId });
     await result.save();
 
     res.status(201).json({ message: 'Result saved successfully' });
