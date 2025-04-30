@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { FaRegUser } from "react-icons/fa";
 
 export default function LoginAndRegister() {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,7 +18,7 @@ export default function LoginAndRegister() {
       const res = await axios.post(`http://localhost:5001/api/auth/${endpoint}`, form);
       if (isLogin) {
         localStorage.setItem('token', res.data.token);
-        alert('Login successful!');
+        alert('login successful!');
         
       } else {
         alert('Signup successful. You can now log in.');
@@ -30,12 +31,15 @@ export default function LoginAndRegister() {
 
   return (
     <div className="p-6 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">{isLogin ? 'Login' : 'Register'}</h2>
+      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+        <FaRegUser />
+        {isLogin ? 'login' : 'register'}
+      </h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           name="username"
-          placeholder="Username"
-          className="border p-2"
+          placeholder="username"
+          className="border p-2 font-bold border-overlay bg-overlay text-accent"
           value={form.username}
           onChange={handleChange}
           required
@@ -43,19 +47,19 @@ export default function LoginAndRegister() {
         <input
           name="password"
           type="password"
-          placeholder="Password"
-          className="border p-2"
+          placeholder="password"
+          className="border p-2 font-bold border-overlay bg-overlay text-accent"
           value={form.password}
           onChange={handleChange}
           required
         />
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded">
-          {isLogin ? 'Login' : 'Register'}
+        <button type="submit" className="bg-accent text-overlay font-bold p-2 rounded">
+          {isLogin ? 'login' : 'register'}
         </button>
       </form>
       <p
         onClick={() => setIsLogin(!isLogin)}
-        className="text-sm text-blue-500 mt-4 cursor-pointer"
+        className="text-sm text-accentText mt-4 cursor-pointer"
       >
         {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}
       </p>
