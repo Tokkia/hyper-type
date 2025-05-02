@@ -94,7 +94,7 @@ export default function TypingBox() {
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="max-w-4xl mx-auto mt-10 p-6 rounded bg-overlay text-2xl flex flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap"
+        className="max-w-[95rem] mx-auto h-[33vh] mt-10 p-6 rounded-2xl bg-overlay text-3xl flex flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap"
         style={{ minHeight: '150px' }}
       >
         {renderSentence()}
