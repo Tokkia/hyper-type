@@ -16,7 +16,7 @@ export default function NavBar() {
           </Link>
         </li>
         <li>
-          <Link to="/race" className="text-accent text-xl hover:text-accentText">
+          <Link to="/racestarting" className="text-accent text-xl hover:text-accentText">
             <PiGameController />
           </Link>
         </li>
