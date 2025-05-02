@@ -89,23 +89,24 @@ export default function TypingBox() {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center px-5 pt-36">
       <div
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="max-w-[95rem] mx-auto h-[33vh] mt-10 p-6 rounded-2xl bg-overlay text-3xl flex flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap"
+        className="h-[25vh] mt-10 px-10 py-10 rounded-2xl bg-overlay text-2xl flex items-center flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-center w-full"
         style={{ minHeight: '150px' }}
       >
         {renderSentence()}
       </div>
 
+
       
       <button
         onClick={generateRandomSentence}
-        className="mt-6 px-6 py-2 bg-background text-accentText hover:bg-gray-700"
+        className="mt-6 px-6 py-2 hover:bg-gray-70 "
       >
-        <MdReplay color="accentText" size={25}/>
+        <MdReplay color="#ECEFF2" size={25}/>
       </button>
     </div>
   );
