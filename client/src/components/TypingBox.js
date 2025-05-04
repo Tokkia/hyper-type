@@ -89,18 +89,30 @@ export default function TypingBox() {
   };
 
   return (
-    <div className="flex flex-col items-center px-5 pt-36">
+    <div className="flex flex-col items-center px-5 pt-40">
+      <div className="ml-auto h-[3vh] w-[30vw] rounded-2xl bg-overlay flex flex-col items-end px-5">
+          <div className="flex items-center gap-8 py-1">
+            <p className='text-accentText text-sm'>timer</p>
+            <button 
+            className="text-sm text-accentText hover:text-accent ">
+              15</button>
+            <button 
+              className="text-sm text-accentText hover:text-accent ">
+              30</button>
+            <button
+              className="text-sm text-accentText hover:text-accent ">
+              60</button>
+          </div>
+      </div>
       <div
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="h-[25vh] mt-10 px-10 py-10 rounded-2xl bg-overlay text-2xl flex items-center flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-center w-full"
+        className="h-[25vh] mt-4 px-10 py-10 rounded-2xl bg-overlay text-2xl flex items-center flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-center w-full"
         style={{ minHeight: '150px' }}
       >
         {renderSentence()}
       </div>
-
-
       
       <button
         onClick={generateRandomSentence}

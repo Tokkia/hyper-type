@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
+import { FaRegUser } from "react-icons/fa";
 
 // ✅ Chart.js v3+ requires manual registration
 import {
@@ -61,38 +62,43 @@ const UserProfile = ({ userId, username }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="bg-gray-800 p-6 rounded-xl max-w-4xl mx-auto">
-        <div className="flex items-center mb-6">
-          <span className="text-4xl mr-4">👤</span>
-          <h2 className="text-2xl font-bold">{username}</h2>
+    <div className=" bg-background p-8">
+      <div className="bg-overlay rounded-2xl h-[25vh] w-[90vw] mx-auto flex items-center justify-center mb-12">
+        <div className="flex items-center gap-4 text-accent text-9xl font-bold ">
+          <FaRegUser />
+          <h2 className="text-4xl font-bold text-accentText">{username}</h2>
         </div>
-        <div className="flex justify-around text-lg mb-6">
+        <div className="flex md:ml-12 lg:ml-32 gap-8 sm:gap-10 md:gap-14 lg:gap-20">
           <div>
-            <p className="uppercase text-sm text-gray-400">top wpm</p>
-            <p className="text-3xl font-semibold">{topWPM}</p>
+            <p className="font-bold text-3xl text-accent mb-3">top wpm</p>
+            <p className="text-5xl font-bold  text-accentText">{topWPM}</p>
           </div>
           <div>
-            <p className="uppercase text-sm text-gray-400">top accuracy</p>
-            <p className="text-3xl font-semibold">{topAccuracy}%</p>
+            <p className="font-bold text-3xl text-accent mb-3">top accuracy</p>
+            <p className="text-5xl font-bold  text-accentText">{topAccuracy}%</p>
           </div>
         </div>
+      </div>
 
+
+      <div className="w-[90vw] mx-auto flex font-semibold justify-end text-sm text-accentText mb-4 gap-8">
         {/* Metric + Time Filter */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="space-x-2">
-            <button onClick={() => setMetric('wpm')} className="px-3 py-1 bg-indigo-600 rounded">WPM</button>
-            <button onClick={() => setMetric('accuracy')} className="px-3 py-1 bg-gray-700 rounded">Accuracy</button>
-          </div>
-          <div className="space-x-2">
-            <button onClick={() => setTimeframe('day')} className="text-sm text-gray-400">Day</button>
-            <button onClick={() => setTimeframe('week')} className="text-sm text-gray-400">Week</button>
-            <button onClick={() => setTimeframe('month')} className="text-sm text-gray-400">Month</button>
-            <button onClick={() => setTimeframe('6month')} className="text-sm text-gray-400">6 Month</button>
-            <button onClick={() => setTimeframe('all')} className="text-sm text-white font-semibold">All Time</button>
-          </div>
+        <div className="rounded-2xl w-fit px-8 h-[4vh] bg-overlay flex gap-8 items-center">
+          <button className=" hover:text-accent">15</button>
+          <button className=" hover:text-accent">30</button>
+          <button className=" hover:text-accent">60</button>
         </div>
+        <div className="rounded-2xl w-fit px-8 h-[4vh] bg-overlay flex gap-8 items-center">
+          <button onClick={() => setMetric('wpm')} className=" hover:text-accent" >wpm</button>
+          <button onClick={() => setMetric('accuracy')} className=" hover:text-accent">accuracy</button>
+        </div>
+        <div className="rounded-2xl w-fit px-8 h-[4vh] bg-overlay flex gap-8 items-center">
+          <button onClick={() => setTimeframe('week')} className=" hover:text-accent">week</button>
+          <button onClick={() => setTimeframe('month')} className=" hover:text-accent">month</button>
+        </div>  
+      </div>                    
 
+      <div className="bg-overlay rounded-2xl h-[50vh] w-[90vw] mx-auto flex justify-center items-center">
         <Line data={chartData} />
       </div>
     </div>
