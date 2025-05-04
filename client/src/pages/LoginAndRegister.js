@@ -19,6 +19,7 @@ export default function LoginAndRegister() {
     try {
       const res = await axios.post('http://localhost:5001/api/auth/login', loginForm);
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', res.data.username); // <-- add this
       alert('Login successful!');
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');

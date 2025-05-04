@@ -1,11 +1,10 @@
 import React from 'react';
-import TypingBox from '../components/TypingBox';
-import RaceResult from '../components/RaceResult';
+import RaceTypingBox from '../components/RaceTypingBox';
 
 export default function Race() {
   return (
     <div>
-      
+      <RaceTypingBox />
     </div>
   );
 }
