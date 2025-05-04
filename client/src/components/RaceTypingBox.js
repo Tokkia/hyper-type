@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import sentencesData from '../assets/sentences.json';
-import { MdReplay } from "react-icons/md";
+import { FaRegUser } from "react-icons/fa";
+import { RiRobot2Line } from "react-icons/ri";
 
-export default function TypingBox() {
+export default function RaceTyping() {
   const [sentence, setSentence] = useState('');
   const [userInput, setUserInput] = useState('');
   const inputRef = useRef(null);
@@ -89,37 +90,25 @@ export default function TypingBox() {
   };
 
   return (
-    <div className="flex flex-col items-center px-5 pt-32">
-      <div className="ml-auto h-[3vh] w-80 rounded-2xl bg-overlay flex flex-col items-center">
-          <div className="px-8 flex items-center gap-10 py-1">
-            <p className='text-accentText text-sm mr-10'>timer</p>
-            <button 
-            className="text-sm text-accentText hover:text-accent ">
-              15</button>
-            <button 
-              className="text-sm text-accentText hover:text-accent ">
-              30</button>
-            <button
-              className="text-sm text-accentText hover:text-accent ">
-              60</button>
-          </div>
-      </div>
-      <div
+    <div className="mt-16 flex flex-col items-center px-5 pt-8">
+        <p className="mb-2 text-2xl font-bold text-accent ml-auto">
+            15
+        </p>
+        <div className="w-full flex h-[25vh] rounded-2xl bg-overlay gap-12 px-10">
+            <div className="text-left">
+                <FaRegUser />
+                <RiRobot2Line />
+            </div>
+        </div>
+        <div
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="h-[25vh] mt-4 px-10 py-10 rounded-2xl bg-overlay text-2xl flex items-center flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-center w-full"
+        className="h-[25vh] mt-8 px-10 py-10 rounded-2xl bg-overlay text-2xl flex items-center flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-center w-full"
         style={{ minHeight: '150px' }}
-      >
+        >
         {renderSentence()}
-      </div>
-      
-      <button
-        onClick={generateRandomSentence}
-        className="mt-2 px-6 py-2 hover:bg-gray-70 "
-      >
-        <MdReplay className="items-center font-bold text-accentText text-3xl hover:text-accent"/>
-      </button>
-    </div>
+        </div>
+    </div> 
   );
 }

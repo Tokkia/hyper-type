@@ -27,7 +27,7 @@ export default function PracticeResult({ wpm, accuracy, time }) {
                 onClick={() => navigate('/')}
                 className="flex justify-center"
             >
-                <MdReplay className="items-center font-bold text-accentText text-2xl hover:text-accent"/>
+                <MdReplay className="items-center font-bold text-accentText text-3xl hover:text-accent"/>
             </button>
         </div>
     );
