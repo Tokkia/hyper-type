@@ -3,66 +3,108 @@ import axios from 'axios';
 import { FaRegUser } from "react-icons/fa";
 
 export default function LoginAndRegister() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ username: '', email: '', password: '' });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleLoginChange = (e) => {
+    setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const endpoint = isLogin ? 'login' : 'signup';
+  const handleRegisterChange = (e) => {
+    setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
+  };
 
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const res = await axios.post(`http://localhost:5001/api/auth/${endpoint}`, form);
-      if (isLogin) {
-        localStorage.setItem('token', res.data.token);
-        alert('login successful!');
-        
-      } else {
-        alert('Signup successful. You can now log in.');
-        setIsLogin(true);
-      }
+      const res = await axios.post('http://localhost:5001/api/auth/login', loginForm);
+      localStorage.setItem('token', res.data.token);
+      alert('Login successful!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Something went wrong');
+      alert(err.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5001/api/auth/signup', registerForm);
+      alert('Signup successful! You can now log in.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Signup failed');
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-        <FaRegUser />
-        {isLogin ? 'login' : 'register'}
-      </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          name="username"
-          placeholder="username"
-          className="border p-2 font-bold border-overlay bg-overlay text-accent"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="password"
-          className="border p-2 font-bold border-overlay bg-overlay text-accent"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit" className="bg-accent text-overlay font-bold p-2 rounded">
-          {isLogin ? 'login' : 'register'}
-        </button>
-      </form>
-      <p
-        onClick={() => setIsLogin(!isLogin)}
-        className="text-sm text-accentText mt-4 cursor-pointer"
-      >
-        {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}
-      </p>
+    <div className="rounded-2xl mx-auto flex flex-col lg:flex-row items-center justify-center sm:gap-6 lg:gap-32 mt-8 lg:mt-40">
+      {/* Register Form */}
+      <div className="p-6 max-w-md">
+        <h2 className="text-3xl font-bold mb-4 flex items-center gap-4">
+          <FaRegUser className="text-5xl font-bold"/>
+          Register
+        </h2>
+        <form onSubmit={handleRegisterSubmit} className="w-96 text-lg flex flex-col gap-4">
+          <input
+            name="username"
+            placeholder="username"
+            className="px-8 border p-3 rounded-2xl border-overlay bg-overlay text-accent"
+            value={registerForm.username}
+            onChange={handleRegisterChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="email"
+            className="px-8 border p-3 rounded-2xl border-overlay bg-overlay text-accent"
+            value={registerForm.email}
+            onChange={handleRegisterChange}
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="password"
+            className="px-8 border p-3 rounded-2xl border-overlay bg-overlay text-accent"
+            value={registerForm.password}
+            onChange={handleRegisterChange}
+            required
+          />
+          <button type="submit" className="text-2xl bg-accent text-overlay font-bold p-3 rounded-2xl">
+            register
+          </button>
+        </form>
+      </div>
+
+      {/* Login Form */}
+      <div className="p-6 max-w-md">
+        <h2 className="text-3xl font-bold mb-4 flex items-center gap-4">
+          <FaRegUser className="text-5xl font-bold"/>
+          Login
+        </h2>
+        <form onSubmit={handleLoginSubmit} className="w-96 text-lg flex flex-col gap-4">
+          <input
+            name="username"
+            placeholder="username"
+            className="px-8 p-3 border rounded-2xl border-overlay bg-overlay text-accent"
+            value={loginForm.username}
+            onChange={handleLoginChange}
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="password"
+            className="px-8 border p-3 rounded-2xl border-overlay bg-overlay text-accent"
+            value={loginForm.password}
+            onChange={handleLoginChange}
+            required
+          />
+          <button type="submit" className="text-xl bg-accent text-overlay font-bold p-3 rounded-2xl">
+            login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
