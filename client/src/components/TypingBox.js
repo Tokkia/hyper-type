@@ -89,10 +89,10 @@ export default function TypingBox() {
   };
 
   return (
-    <div className="flex flex-col items-center px-5 pt-40">
-      <div className="ml-auto h-[3vh] w-[30vw] rounded-2xl bg-overlay flex flex-col items-end px-5">
-          <div className="flex items-center gap-8 py-1">
-            <p className='text-accentText text-sm'>timer</p>
+    <div className="flex flex-col items-center px-5 pt-32">
+      <div className="ml-auto h-[3vh] w-80 rounded-2xl bg-overlay flex flex-col items-center">
+          <div className="px-8 flex items-center gap-10 py-1">
+            <p className='text-accentText text-sm mr-10'>timer</p>
             <button 
             className="text-sm text-accentText hover:text-accent ">
               15</button>
@@ -116,9 +116,9 @@ export default function TypingBox() {
       
       <button
         onClick={generateRandomSentence}
-        className="mt-6 px-6 py-2 hover:bg-gray-70 "
+        className="mt-2 px-6 py-2 hover:bg-gray-70 "
       >
-        <MdReplay color="#ECEFF2" size={25}/>
+        <MdReplay className="items-center font-bold text-accentText text-2xl hover:text-accent"/>
       </button>
     </div>
   );
