@@ -95,7 +95,7 @@ export default function RaceTyping() {
             15
         </p>
         <div className="w-full flex h-[25vh] rounded-2xl bg-overlay gap-12 px-10">
-            <div className="text-left">
+            <div className="flex flex-col justify-center text-left text-5xl font-bold gap-12">
                 <FaRegUser />
                 <RiRobot2Line />
             </div>
