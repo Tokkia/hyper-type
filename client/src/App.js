@@ -10,7 +10,7 @@ import RaceResults from './pages/RaceResults';
 import NavBar from './components/NavBar';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import TypingBox from './components/TypingBox'; // ✅ import added
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
         <Route path="/racestarting" element={<RaceStarting />} />
         <Route path="/race" element={<Race />} />
         <Route path="/raceresults" element={<RaceResults />} />
+        <Route path="/typing" element={<TypingBox />} /> {/* ✅ route added */}
       </Routes>
     </Router>
   );
