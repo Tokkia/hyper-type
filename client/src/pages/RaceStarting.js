@@ -34,7 +34,7 @@ export default function RaceStarting() {
               hard</button>
           </div>
           <div className="bg-overlay mb-6 text-md w-8rem h-[6vh] rounded-2xl px-8 flex items-center gap-10 py-1">
-              <p className='text-accentText mr-24'>words</p>
+              <p className='text-accentText mr-24'>timer</p>
               <button 
               className=" text-accentText hover:text-accent mr-6">
                 15</button>
