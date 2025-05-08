@@ -21,6 +21,7 @@ export default function LoginAndRegister() {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('username', res.data.username); // <-- add this
       alert('Login successful!');
+      setLoginForm({ username: '', password: '' });
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
     }
@@ -31,6 +32,7 @@ export default function LoginAndRegister() {
     try {
       await axios.post('http://localhost:5001/api/auth/signup', registerForm);
       alert('Signup successful! You can now log in.');
+      setRegisterForm({ username: '', email: '', password: '' });
     } catch (err) {
       alert(err.response?.data?.message || 'Signup failed');
     }
