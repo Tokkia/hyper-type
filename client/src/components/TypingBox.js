@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import sentencesData from '../assets/sentences.json';
 import { MdReplay } from "react-icons/md";
 
@@ -7,13 +8,13 @@ export default function TypingBox() {
   const [typedInputs, setTypedInputs] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [isRunning, setIsRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
-
   const inputRef = useRef(null);
+  const timerRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     initSentences();
@@ -203,7 +204,6 @@ export default function TypingBox() {
           ))}
         </div>
       </div>
-
       
 
       {/* Typing box */}

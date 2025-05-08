@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Line } from 'react-chartjs-2';
 import { FaRegUser } from "react-icons/fa";
 
-// ✅ Chart.js v3+ requires manual registration
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,8 +27,9 @@ ChartJS.register(
 
 const UserProfile = ({ userId, username }) => {
   const [results, setResults] = useState([]);
-  const [metric, setMetric] = useState('wpm'); // or 'accuracy'
-  const [timeframe, setTimeframe] = useState('all'); // 'day', 'week', etc.
+  const [metric, setMetric] = useState('wpm');
+  const [timeframe, setTimeframe] = useState('week'); // 'week' or 'month'
+  const [timerLength, setTimerLength] = useState(30); // 15, 30, or 60
 
   useEffect(() => {
     async function fetchResults() {
@@ -45,8 +46,39 @@ const UserProfile = ({ userId, username }) => {
   const topWPM = Math.max(...results.map(r => r.wpm), 0);
   const topAccuracy = Math.max(...results.map(r => r.accuracy), 0);
 
-  const labels = results.map(r => new Date(r.timestamp).toLocaleDateString());
-  const data = results.map(r => metric === 'wpm' ? r.wpm : r.accuracy);
+  const today = dayjs();
+  let labels = [];
+
+  if (timeframe === 'week') {
+    const start = today.startOf('week');
+    labels = Array.from({ length: 7 }, (_, i) => start.add(i, 'day').format('dddd'));
+  }
+
+  if (timeframe === 'month') {
+    const startOfMonth = today.startOf('month');
+    const daysInMonth = today.daysInMonth();
+    labels = Array.from({ length: daysInMonth }, (_, i) =>
+      startOfMonth.add(i, 'day').format('MMM D')
+    );
+  }
+
+  const groupedResults = {};
+  results.forEach(r => {
+    if (r.time !== timerLength) return; // filter by test duration
+
+    const date = dayjs(r.timestamp);
+    let key = timeframe === 'week' ? date.format('dddd') : date.format('MMM D');
+
+    if (!groupedResults[key]) groupedResults[key] = [];
+    groupedResults[key].push(metric === 'wpm' ? r.wpm : r.accuracy);
+  });
+
+  const data = labels.map(label => {
+    const values = groupedResults[label];
+    if (!values) return null;
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+    return Math.round(avg * 10) / 10;
+  });
 
   const chartData = {
     labels,
@@ -54,15 +86,71 @@ const UserProfile = ({ userId, username }) => {
       {
         label: metric.toUpperCase(),
         data,
-        fill: false,
         borderColor: '#4f46e5',
-        tension: 0.1,
+        backgroundColor: '#4f46e5',
+        fill: false,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       },
     ],
   };
 
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      y: {
+        min: 0,
+        max: metric === 'wpm' ? 200 : 100,
+        ticks: {
+          stepSize: metric === 'wpm' ? 20 : 10,
+          callback: value => {
+            if (metric === 'wpm') return [0, 100, 200].includes(value) ? `${value} wpm` : '';
+            return [0, 50, 100].includes(value) ? `${value}%` : '';
+          }
+        },
+        title: {
+          display: true,
+          text: metric === 'wpm' ? 'wpm' : 'accuracy'
+        },
+        grid: {
+          display: false
+        }
+      },
+      x: {
+        ticks: {
+          autoSkip: false,
+          callback: function (val, index) {
+            const label = this.getLabelForValue(val);
+            if (timeframe === 'week') {
+              return ['Sunday', 'Wednesday', 'Saturday'].includes(label) ? label : '';
+            }
+            if (timeframe === 'month') {
+              const total = this.getLabels().length;
+              const middle = Math.floor(total / 2);
+              return index === 0 || index === middle || index === total - 1 ? label : '';
+            }
+            return label;
+          }
+        },
+        title: {
+          display: true,
+          text: timeframe === 'week' ? 'week' : 'month'
+        },
+        grid: {
+          display: false
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
+
   return (
-    <div className=" bg-background p-8">
+    <div className="bg-background p-8">
       <div className="bg-overlay rounded-2xl h-[25vh] w-[90vw] mx-auto flex items-center justify-center mb-12">
         <div className="flex items-center gap-4 text-accent text-9xl font-bold ">
           <FaRegUser />
@@ -71,35 +159,39 @@ const UserProfile = ({ userId, username }) => {
         <div className="flex md:ml-12 lg:ml-32 gap-8 sm:gap-10 md:gap-14 lg:gap-20">
           <div>
             <p className="font-bold text-3xl text-accent mb-3">top wpm</p>
-            <p className="text-5xl font-bold  text-accentText">{topWPM}</p>
+            <p className="text-5xl font-bold text-accentText">{topWPM}</p>
           </div>
           <div>
             <p className="font-bold text-3xl text-accent mb-3">top accuracy</p>
-            <p className="text-5xl font-bold  text-accentText">{topAccuracy}%</p>
+            <p className="text-5xl font-bold text-accentText">{topAccuracy}%</p>
           </div>
         </div>
       </div>
 
-
-      <div className="w-[90vw] mx-auto flex font-semibold justify-end text-sm text-accentText mb-4 gap-8">
-        {/* Metric + Time Filter */}
-        <div className="rounded-2xl w-fit px-8 h-[4vh] bg-overlay flex gap-8 items-center">
-          <button className=" hover:text-accent">15</button>
-          <button className=" hover:text-accent">30</button>
-          <button className=" hover:text-accent">60</button>
+      <div className="w-[90vw] mx-auto flex font-semibold justify-end text-sm text-accentText mb-4 gap-4 flex-wrap">
+        <div className="rounded-2xl px-6 py-1 h-[4vh] bg-overlay flex gap-4 items-center">
+          <button onClick={() => setMetric('wpm')} className={`hover:text-accent ${metric === 'wpm' ? 'bg-yellow-400 text-background px-2 rounded' : ''}`}>wpm</button>
+          <button onClick={() => setMetric('accuracy')} className={`hover:text-accent ${metric === 'accuracy' ? 'bg-yellow-400 text-background px-2 rounded' : ''}`}>accuracy</button>
         </div>
-        <div className="rounded-2xl w-fit px-8 h-[4vh] bg-overlay flex gap-8 items-center">
-          <button onClick={() => setMetric('wpm')} className=" hover:text-accent" >wpm</button>
-          <button onClick={() => setMetric('accuracy')} className=" hover:text-accent">accuracy</button>
+        <div className="rounded-2xl px-6 py-1 h-[4vh] bg-overlay flex gap-4 items-center">
+          <button onClick={() => setTimeframe('week')} className={`hover:text-accent ${timeframe === 'week' ? 'bg-yellow-400 text-background px-2 rounded' : ''}`}>week</button>
+          <button onClick={() => setTimeframe('month')} className={`hover:text-accent ${timeframe === 'month' ? 'bg-yellow-400 text-background px-2 rounded' : ''}`}>month</button>
         </div>
-        <div className="rounded-2xl w-fit px-8 h-[4vh] bg-overlay flex gap-8 items-center">
-          <button onClick={() => setTimeframe('week')} className=" hover:text-accent">week</button>
-          <button onClick={() => setTimeframe('month')} className=" hover:text-accent">month</button>
-        </div>  
-      </div>                    
+        <div className="rounded-2xl px-6 py-1 h-[4vh] bg-overlay flex gap-4 items-center">
+          {[15, 30, 60].map(time => (
+            <button
+              key={time}
+              onClick={() => setTimerLength(time)}
+              className={`hover:text-accent px-2 rounded ${timerLength === time ? 'bg-yellow-400 text-background' : ''}`}
+            >
+              {time}s
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="bg-overlay rounded-2xl h-[50vh] w-[90vw] mx-auto flex justify-center items-center">
-        <Line data={chartData} />
+        <Line data={chartData} options={chartOptions} />
       </div>
     </div>
   );

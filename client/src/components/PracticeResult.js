@@ -1,34 +1,39 @@
-import { useNavigate } from 'react-router-dom';
-import { FaRegUser } from "react-icons/fa";
+import React from 'react';
 import { MdReplay } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
 
-export default function PracticeResult({ wpm, accuracy, time }) {
-    const navigate = useNavigate();
+export default function PracticeResult({ wpm = 0, accuracy = 0 }) {
+  const navigate = useNavigate();
 
-    return (
-        <div className="p-8 mt-40 flex flex-col items-center">
-            <div className="bg-overlay rounded-2xl h-[25vh] w-[90vw] mx-auto flex items-center justify-center mb-8">
-                <div className="flex items-center gap-4 text-accent text-9xl font-bold ">
-                    <FaRegUser />
-                    <h2 className="text-4xl font-bold text-accentText">username</h2>
-                </div>
-                <div className="flex md:ml-12 lg:ml-32 gap-8 sm:gap-10 md:gap-14 lg:gap-20">
-                    <div>
-                    <p className="font-bold text-3xl text-accent mb-3">wpm</p>
-                    <p className="text-5xl font-bold  text-accentText">100</p>
-                    </div>
-                    <div>
-                    <p className="font-bold text-3xl text-accent mb-3">accuracy</p>
-                    <p className="text-5xl font-bold  text-accentText">0%</p>
-                    </div>
-                </div>
-            </div> 
-            <button 
-                onClick={() => navigate('/')}
-                className="flex justify-center"
-            >
-                <MdReplay className="items-center font-bold text-accentText text-3xl hover:text-accent"/>
-            </button>
+  const handleRestart = () => {
+    navigate('/typing');
+  };
+
+  return (
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-background text-white">
+      <div
+        className="bg-overlay flex items-center justify-between px-16 py-10 rounded-xl transform -translate-y-[12%] mx-auto"
+        style={{ width: '80vw', height: '25vh' }}
+      >
+        <div className="flex items-center space-x-6">
+          <div className="w-32 h-32 bg-gray-600 rounded-full flex items-center justify-center text-7xl">
+            <span role="img" aria-label="user">👤</span>
+          </div>
+          <div className="text-6xl font-semibold tracking-widest">username</div>
         </div>
-    );
+        <div className="flex flex-col items-center text-center">
+          <div className="uppercase text-lg text-gray-400">wpm</div>
+          <div className="text-8xl font-bold">{wpm}</div>
+        </div>
+        <div className="flex flex-col items-center text-center">
+          <div className="uppercase text-lg text-gray-400">accuracy</div>
+          <div className="text-8xl font-bold">{accuracy}%</div>
+        </div>
+      </div>
+
+      <button onClick={handleRestart} className="mt-10 text-accentText hover:text-accent">
+        <MdReplay className="text-4xl" />
+      </button>
+    </div>
+  );
 }
