@@ -61,14 +61,13 @@ export default function NavBar() {
       </ul>
 
       <ul className="flex items-center gap-4">
-        {isLoggedIn && <span className="text-accentText text-sm font-medium">{username}</span>}
+        {isLoggedIn && <span className="text-accentText text-sm font-bold">{username}</span>}
         <li ref={dropdownRef} className="relative">
           {isLoggedIn ? (
             <button
               onClick={() => setDropdownOpen(prev => !prev)}
               className="text-accent text-xl hover:text-accentText"
             >
-              username_placeholder
               <FaRegUser className="text-3xl font-bold" />
             </button>
           ) : (
