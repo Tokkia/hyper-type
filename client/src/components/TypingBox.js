@@ -186,14 +186,17 @@ export default function TypingBox() {
   return (
     <div className="flex flex-col items-center px-5 pt-32">
       {/* Timer controls */}
-      <div className="ml-auto h-[3vh] w-80 rounded-2xl bg-overlay flex flex-col items-center mb-4">
-        <div className="px-8 flex items-center gap-10 py-1">
-          <p className="text-accentText text-sm mr-10">timer</p>
+      <div className="ml-auto h-[4vh] w-90 flex flex-row items-center mb-4">
+        {isRunning && (
+          <p className="text-right text-accentText text-md mb-2 px-4 mt-2">Time Left: {timeLeft}s</p>
+        )}
+        <div className=" bg-overlay  rounded-2xl px-8 flex items-center gap-10 py-1">
+          <p className="text-accentText text-md mr-10">timer</p>
           {[15, 30, 60].map((sec) => (
             <button
               key={sec}
               onClick={() => startTest(sec)}
-              className="text-sm text-accentText hover:text-accent"
+              className="text-md text-accentText hover:text-accent"
             >
               {sec}
             </button>
@@ -201,9 +204,7 @@ export default function TypingBox() {
         </div>
       </div>
 
-      {isRunning && (
-        <p className="text-accentText text-sm mb-2">Time Left: {timeLeft}s</p>
-      )}
+      
 
       {/* Typing box */}
       <div
