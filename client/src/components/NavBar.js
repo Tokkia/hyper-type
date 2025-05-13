@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaRegUser } from "react-icons/fa";
 import { PiGameController } from "react-icons/pi";
 import { TbKeyboard } from "react-icons/tb";
@@ -10,6 +10,7 @@ export default function NavBar() {
   const [username, setUsername] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const dropdownRef = useRef();
 
   useEffect(() => {
@@ -18,10 +19,12 @@ export default function NavBar() {
     if (token && storedUsername) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
+    } else {
+      setIsLoggedIn(false);
+      setUsername('');
     }
-  }, []);
+  }, [location]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -37,7 +40,7 @@ export default function NavBar() {
     localStorage.removeItem('username');
     setIsLoggedIn(false);
     setDropdownOpen(false);
-    navigate('/login');
+    navigate('/loginandregister');
   };
 
   return (

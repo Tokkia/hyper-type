@@ -4,7 +4,7 @@ import { FaRegUser } from "react-icons/fa";
 
 export default function LoginAndRegister() {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-  const [registerForm, setRegisterForm] = useState({ username: '', email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ username: '', password: '' });
 
   const handleLoginChange = (e) => {
     setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
@@ -19,10 +19,11 @@ export default function LoginAndRegister() {
     try {
       const res = await axios.post('http://localhost:5001/api/auth/login', loginForm);
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('username', res.data.username); // <-- add this
+      localStorage.setItem('username', res.data.username);
       alert('Login successful!');
       setLoginForm({ username: '', password: '' });
     } catch (err) {
+      console.error('Login error:', err.response?.data || err.message);
       alert(err.response?.data?.message || 'Login failed');
     }
   };
@@ -30,11 +31,12 @@ export default function LoginAndRegister() {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/auth/signup', registerForm);
-      alert('Signup successful! You can now log in.');
-      setRegisterForm({ username: '', email: '', password: '' });
+      await axios.post('http://localhost:5001/api/auth/register', registerForm);
+      alert('Registration successful! You can now log in.');
+      setRegisterForm({ username: '', password: '' });
     } catch (err) {
-      alert(err.response?.data?.message || 'Signup failed');
+      console.error('Registration error:', err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Registration failed');
     }
   };
 
@@ -52,15 +54,6 @@ export default function LoginAndRegister() {
             placeholder="username"
             className="px-8 border p-3 rounded-2xl border-overlay bg-overlay text-accent"
             value={registerForm.username}
-            onChange={handleRegisterChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="email"
-            className="px-8 border p-3 rounded-2xl border-overlay bg-overlay text-accent"
-            value={registerForm.email}
             onChange={handleRegisterChange}
             required
           />
