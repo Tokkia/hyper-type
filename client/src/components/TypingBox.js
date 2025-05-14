@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import sentencesData from '../assets/sentences.json';
 import { MdReplay } from "react-icons/md";
+import { calculateWpmAndAccuracy } from '../utils/calculateMetrics';
 
 export default function TypingBox() {
   const [sentences, setSentences] = useState([]);
@@ -13,7 +14,7 @@ export default function TypingBox() {
   const [endTime, setEndTime] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const inputRef = useRef(null);
-  const timerRef = useRef(null);
+  // const timerRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,11 +29,19 @@ export default function TypingBox() {
       if (remaining <= 0) {
         clearInterval(interval);
         setIsRunning(false);
-        navigate('/practiceresult');
+        
+        const fullTypedText = typedInputs.join('') + userInput;
+        const referenceText = sentences.join('');
+        const totalTimeInSeconds = (endTime - startTime) / 1000;
+
+        const { wpm, accuracy } = calculateWpmAndAccuracy(fullTypedText, referenceText, totalTimeInSeconds);
+
+        console.log('WPM:', wpm, 'Accuracy:', accuracy);
+        navigate('/typingresults', { state: { wpm, accuracy } });
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isRunning, endTime, navigate]);
+  }, [isRunning, endTime, navigate, typedInputs, userInput, sentences, startTime]);
 
   const getRandomSentence = () => {
     const index = Math.floor(Math.random() * sentencesData.data.length);

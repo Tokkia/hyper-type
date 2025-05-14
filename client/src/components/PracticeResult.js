@@ -1,9 +1,11 @@
 import React from 'react';
 import { MdReplay } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // ✅ ADD useLocation
 
-export default function PracticeResult({ wpm = 0, accuracy = 0 }) {
+export default function PracticeResult() { // ✅ REMOVE props
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ GET location
+  const { wpm = 0, accuracy = 0 } = location.state || {}; // ✅ EXTRACT wpm and accuracy from state
 
   const handleRestart = () => {
     navigate('/typing');
@@ -23,11 +25,11 @@ export default function PracticeResult({ wpm = 0, accuracy = 0 }) {
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="uppercase text-lg text-gray-400">wpm</div>
-          <div className="text-8xl font-bold">{wpm}</div>
+          <div className="text-8xl font-bold">{wpm}</div> {/* ✅ Displays WPM */}
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="uppercase text-lg text-gray-400">accuracy</div>
-          <div className="text-8xl font-bold">{accuracy}%</div>
+          <div className="text-8xl font-bold">{accuracy}%</div> {/* ✅ Displays Accuracy */}
         </div>
       </div>
 
