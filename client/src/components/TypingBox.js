@@ -28,10 +28,11 @@ export default function TypingBox() {
       if (remaining <= 0) {
         clearInterval(interval);
         setIsRunning(false);
+        navigate('/practiceresult');
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isRunning, endTime]);
+  }, [isRunning, endTime, navigate]);
 
   const getRandomSentence = () => {
     const index = Math.floor(Math.random() * sentencesData.data.length);
