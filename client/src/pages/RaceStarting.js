@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRegUser } from "react-icons/fa";
 import { RiRobot2Line } from "react-icons/ri";
 
-export default function RaceStarting() {
+export default function RaceStarting({userID}) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
   const [selectedTime, setSelectedTime] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('username');
+    if (token && storedUsername) {
+      setIsLoggedIn(true);
+      setUsername(storedUsername);
+    } else {
+      setIsLoggedIn(false);
+      setUsername('');
+    }
+  }, []);
 
   const startRace = () => {
     navigate('/race', { state: { difficulty } });
@@ -18,7 +32,7 @@ export default function RaceStarting() {
       <div className="bg-overlay lg:w-[40vw] h-auto lg:h-[30vh] rounded-2xl flex flex-col justify-center text-left text-7xl font-bold gap-12 px-10 py-12 lg:px-24">
         <div className="flex flex-row items gap-8">
           <FaRegUser />
-          <h className="mt-2 text-2xl text-accentText">username</h>
+          {isLoggedIn && <h className="mt-2 text-2xl text-accentText">{username}</h>}
         </div>
         <div className="flex flex-row items gap-8">
           <RiRobot2Line />
