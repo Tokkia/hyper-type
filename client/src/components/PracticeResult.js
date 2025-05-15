@@ -1,6 +1,7 @@
 import React from 'react';
 import { MdReplay } from "react-icons/md";
 import { useNavigate, useLocation } from 'react-router-dom'; // ✅ ADD useLocation
+import { FaRegUser } from "react-icons/fa";
 
 export default function PracticeResult() { // ✅ REMOVE props
   const navigate = useNavigate();
@@ -12,24 +13,21 @@ export default function PracticeResult() { // ✅ REMOVE props
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-background text-white">
-      <div
-        className="bg-overlay flex items-center justify-between px-16 py-10 rounded-xl transform -translate-y-[12%] mx-auto"
-        style={{ width: '80vw', height: '25vh' }}
-      >
-        <div className="flex items-center space-x-6">
-          <div className="w-32 h-32 bg-gray-600 rounded-full flex items-center justify-center text-7xl">
-            <span role="img" aria-label="user">👤</span>
+    <div className="p-8 md:mt-24 lg:mt-40 flex flex-col items-center">
+      <div className="bg-overlay flex md:flex-col md:gap-12 lg:flex-row rounded-2xl md:h-[50vh] lg:h-[30vh] w-[90vw] mx-auto items-center justify-center mb-6">
+        <div className="flex items-center gap-4 text-accent">
+            <FaRegUser className="text-[12rem] font-bold"/>
+            <h2 className="text-6xl font-bold text-accentText">placehodler</h2>
+        </div>
+        <div className="flex md:ml-12 lg:ml-32 gap-8 sm:gap-10 md:gap-14 lg:gap-20 mb-4">
+          <div>
+              <p className="font-bold text-4xl text-accent mb-3">wpm</p>
+              <p className="text-5xl font-bold  text-accentText">{wpm}</p>
           </div>
-          <div className="text-6xl font-semibold tracking-widest">username</div>
-        </div>
-        <div className="flex flex-col items-center text-center">
-          <div className="uppercase text-lg text-gray-400">wpm</div>
-          <div className="text-8xl font-bold">{wpm}</div> {/* ✅ Displays WPM */}
-        </div>
-        <div className="flex flex-col items-center text-center">
-          <div className="uppercase text-lg text-gray-400">accuracy</div>
-          <div className="text-8xl font-bold">{accuracy}%</div> {/* ✅ Displays Accuracy */}
+          <div>
+              <p className="font-bold text-4xl text-accent mb-3">accuracy</p>
+              <p className="text-5xl font-bold  text-accentText">{accuracy}%</p>
+          </div>
         </div>
       </div>
 

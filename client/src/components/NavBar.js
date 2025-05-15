@@ -64,7 +64,7 @@ export default function NavBar() {
       </ul>
 
       <ul className="flex items-center gap-4">
-        {isLoggedIn && <span className="text-accentText text-sm font-bold">{username}</span>}
+        {isLoggedIn && <span className="text-accentText text-md font-medium">{username}</span>}
         <li ref={dropdownRef} className="relative">
           {isLoggedIn ? (
             <button
@@ -86,13 +86,13 @@ export default function NavBar() {
                 className="px-4 py-2 hover:bg-accent hover:text-overlay rounded-t-xl"
                 onClick={() => setDropdownOpen(false)}
               >
-                User Profile
+                user profile
               </Link>
               <button
                 onClick={handleSignOut}
                 className="px-4 py-2 text-left hover:bg-accent hover:text-overlay rounded-b-xl"
               >
-                Sign Out
+                sign out
               </button>
             </div>
           )}

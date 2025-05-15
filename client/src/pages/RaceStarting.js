@@ -1,8 +1,12 @@
 import React from 'react';
 import { FaRegUser } from "react-icons/fa";
 import { RiRobot2Line } from "react-icons/ri";
+import { useState } from 'react';
 
 export default function RaceStarting() {
+  const [activeBtn, setActiveBtn] = useState(null);  
+  const [selectedTime, setSelectedTime] = useState(null);
+
   return (
     <div className="mt-64 flex-col lg:flex-row justify-center flex h-[25vh] gap-12 px-12">
         <div className="bg-overlay lg:w-[40vw] h-auto lg:h-[30vh] rounded-2xl flex flex-col justify-center text-left text-7xl font-bold gap-12 px-10 py-12 lg:px-24">
@@ -23,27 +27,31 @@ export default function RaceStarting() {
         <div className="h-auto lg:h-[30vh] flex flex-col w-[80] gap-10">
           <div className="bg-overlay text-md w-8rem h-[6vh] rounded-2xl px-8 flex items-center  gap-10 py-1">
             <p className='text-accentText mr-10'>difficulty</p>
-            <button 
-            className=" text-accentText hover:text-accent ">
-              easy</button>
-            <button 
-              className=" text-accentText hover:text-accent ">
-              medium</button>
-            <button
-              className=" text-accentText hover:text-accent ">
-              hard</button>
+            {['easy', 'medium', 'hard'].map((label) => (
+              <button
+                key={label}
+                onClick={() => setActiveBtn(label)}
+                className={`hover:text-accent ${
+                  activeBtn === label ? 'text-accent' : 'text-accentText'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
           <div className="bg-overlay mb-6 text-md w-8rem h-[6vh] rounded-2xl px-8 flex items-center gap-10 py-1">
               <p className='text-accentText mr-24'>words</p>
-              <button 
-              className=" text-accentText hover:text-accent mr-6">
-                15</button>
-              <button 
-                className=" text-accentText hover:text-accent mr-6">
-                30</button>
-              <button
-                className=" text-accentText hover:text-accent ">
-                60</button>
+              {[15, 30, 60].map((time) => (
+                <button
+                  key={time}
+                  onClick={() => setSelectedTime(time)}
+                  className={`mr-6 hover:text-accent ${
+                    selectedTime === time ? 'text-accent' : 'text-accentText'
+                  }`}
+                >
+                  {time}
+                </button>
+              ))}
             </div>
             <div className="bg-accent text-md w-8rem h-[6vh] rounded-2xl px-8 flex items-center justify-center gap-10 py-1">
               <button 
