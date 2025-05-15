@@ -24,7 +24,7 @@ export default function PracticeResult() { // ✅ REMOVE props
               <p className="font-bold text-4xl text-accent mb-3">wpm</p>
               <p className="text-5xl font-bold  text-accentText">{wpm}</p>
           </div>
-          <div>
+          <div>Y
               <p className="font-bold text-4xl text-accent mb-3">accuracy</p>
               <p className="text-5xl font-bold  text-accentText">{accuracy}%</p>
           </div>
