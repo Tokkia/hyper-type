@@ -21,7 +21,9 @@ app.use(cors({
 app.use(express.json());
 
 const authRoutes = require('./routes/authRoutes');
+const sessionRoutes = require('./routes/sessions');
 app.use('/api/auth', authRoutes);
+app.use('/api/sessions', sessionRoutes);
 
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);
