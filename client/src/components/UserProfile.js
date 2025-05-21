@@ -25,11 +25,25 @@ ChartJS.register(
   Legend
 );
 
-const UserProfile = ({ userId, username }) => {
+const UserProfile = ({ userId }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
   const [results, setResults] = useState([]);
   const [metric, setMetric] = useState('wpm');
   const [timeframe, setTimeframe] = useState('week'); // 'week' or 'month'
   const [timerLength, setTimerLength] = useState(30); // 15, 30, or 60
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('username');
+    if (token && storedUsername) {
+      setIsLoggedIn(true);
+      setUsername(storedUsername);
+    } else {
+      setIsLoggedIn(false);
+      setUsername('');
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchResults() {
@@ -154,7 +168,7 @@ const UserProfile = ({ userId, username }) => {
       <div className="bg-overlay rounded-2xl h-[25vh] w-[90vw] mx-auto flex items-center justify-center mb-12">
         <div className="flex items-center gap-4 text-accent text-9xl font-bold ">
           <FaRegUser />
-          <h2 className="text-4xl font-bold text-accentText">{username}</h2>
+          {isLoggedIn && <h2 className="text-4xl font-bold text-accentText">{username}</h2>}
         </div>
         <div className="flex md:ml-12 lg:ml-32 gap-8 sm:gap-10 md:gap-14 lg:gap-20">
           <div>
