@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import sentencesData from '../assets/sentences.json';
 import { FaRegUser } from "react-icons/fa";
 import { RiRobot2Line } from "react-icons/ri";
 
 const botSettings = {
-  easy: { wpm: 30 },
-  medium: { wpm: 60 },
-  hard: { wpm: 90 },
+  easy: { wpm: 45 },
+  medium: { wpm: 80 },
+  hard: { wpm: 115 },
+  expert: { wpm: 150 },
 };
 
 const getCharDelay = (wpm) => {
@@ -14,13 +16,19 @@ const getCharDelay = (wpm) => {
   return 60000 / cpm;
 };
 
-export default function RaceTypingBox({ difficulty = 'medium' }) {
-  const [sentence, setSentence] = useState('');
+export default function RaceTypingBox({ difficulty, wordCount }) {
+  const [countdown, setCountdown] = useState(wordCount);
+  const [sentences, setSentences] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [botText, setBotText] = useState('');
   const inputRef = useRef(null);
   const botIntervalRef = useRef(null);
   const [botDifficulty] = useState(difficulty);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setCountdown(wordCount);
+  }, [wordCount]);
 
   useEffect(() => {
     generateRandomSentence();
@@ -28,23 +36,76 @@ export default function RaceTypingBox({ difficulty = 'medium' }) {
   }, []);
 
   useEffect(() => {
-    if (sentence) {
-      startBotTyping(botSettings[botDifficulty], sentence, setBotText);
+    if (sentences) {
+      startBotTyping(botSettings[botDifficulty], sentences.join(' '), setBotText);
     }
     return () => clearInterval(botIntervalRef.current);
-  }, [sentence, botDifficulty]);
+  }, [sentences, botDifficulty]);
+  
+  useEffect(() => {
+    const correctWords = countCorrectWords(userInput);
+    const newCountdown = wordCount - correctWords;
+    if (newCountdown !== countdown) {
+      setCountdown(newCountdown);
+
+      if (newCountdown <= 0) {
+        clearInterval(botIntervalRef.current);
+        setTimeout(() => navigate('/raceresults'), 500);
+      }
+    }
+  }, [userInput]); // Run this every time userInput changes
+
+
+  const countCorrectWords = (input) => {
+    const userWords = input.trim().split(/\s+/);
+    const targetWords = sentences.join(' ').trim().split(/\s+/);
+
+    let count = 0;
+    for (let i = 0; i < userWords.length; i++) {
+      if (userWords[i] === targetWords[i]) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  };
 
   const generateRandomSentence = () => {
-    const randomIndex = Math.floor(Math.random() * sentencesData.data.length);
-    const newSentence = sentencesData.data[randomIndex].sentence;
-    setSentence(newSentence);
+    const allWords = sentencesData.data
+      .map((item) => item.sentence)
+      .join(' ')
+      .split(/\s+/);
+
+    // Shuffle the words randomly
+    const shuffledWords = allWords
+      .map(word => ({ word, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ word }) => word);
+
+    const selectedWords = shuffledWords.slice(0, wordCount);
+    let sentenceArray = [];
+    let buffer = [];
+
+    // Chunk words into pseudo-sentences (e.g. every 10 words)
+    for (let i = 0; i < selectedWords.length; i++) {
+      buffer.push(selectedWords[i]);
+      if (buffer.length === 10 || i === selectedWords.length - 1) {
+        sentenceArray.push(buffer.join(' '));
+        buffer = [];
+      }
+    }
+
+    setSentences(sentenceArray);
     setUserInput('');
     setBotText('');
   };
 
   const handleKeyDown = (e) => {
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-      setUserInput(prev => prev + e.key);
+      // Ensure apostrophes are plain single quotes
+      const char = e.key === '’' ? "'" : e.key;
+      setUserInput(prev => prev + char);
     } else if (e.key === 'Backspace') {
       setUserInput(prev => prev.slice(0, -1));
     } else if (e.key === 'Tab') {
@@ -67,68 +128,77 @@ export default function RaceTypingBox({ difficulty = 'medium' }) {
       onUpdate(typed);
     }, delay);
   };
+  
+const renderSentence = (typedInput) => {
+  const fullReference = sentences.join(' ');
+  const typed = typedInput;
+  let charCounter = 0;
 
-  const renderSentence = (typedInput) => {
-    const words = sentence.split(' ');
-    const typedChars = typedInput.split('');
-    let charIndex = 0;
+  const wordElements = fullReference.split(' ').map((word, wordIdx) => {
+    const chars = word.split('').map((char, charIdx) => {
+      let style = 'text-accent';
+      const typedChar = typed[charCounter];
+      if (typedChar !== undefined) {
+        style = typedChar === char ? 'text-accentText' : 'text-red-400';
+      }
 
-    return words.map((word, wordIdx) => (
-      <span key={wordIdx} className="flex gap-1">
-        {word.split('').map((char, idx) => {
-          const expectedChar = char;
-          const typedChar = typedChars[charIndex];
-          let charStyle = 'text-accent';
-          let displayChar = char;
+      const showCaret = charCounter === typed.length;
 
-          if (typedChar != null) {
-            if (typedChar === expectedChar) {
-              charStyle = 'text-accentText';
-            } else {
-              if (expectedChar === ' ') {
-                displayChar = '_';
-              }
-              charStyle = 'text-red-400';
-            }
-          }
+      charCounter++;
 
-          charIndex++;
-
-          return (
-            <span key={idx} className={`${charStyle}`}>
-              {displayChar}
-            </span>
-          );
-        })}
-        <span>
-          {(() => {
-            const expectedChar = ' ';
-            const typedChar = typedChars[charIndex];
-            let spaceDisplay = ' ';
-            let spaceStyle = 'text-overlay';
-
-            if (typedChar != null) {
-              if (typedChar === expectedChar) {
-                spaceStyle = 'text-accent';
-              } else {
-                spaceDisplay = '_';
-                spaceStyle = 'text-red-400';
-              }
-            }
-
-            charIndex++;
-
-            return <span className={`${spaceStyle}`}>{spaceDisplay}</span>;
-          })()}
+      return (
+        <span key={`${wordIdx}-${charIdx}`} className="relative inline-block whitespace-pre">
+          <span className={`${style} invisible`}>{char}</span>
+          <span className={`${style} absolute inset-0`}>
+            {char}
+            {showCaret && (
+              <span className="absolute left-0 top-0 w-[1px] h-full bg-accentText animate-caret" />
+            )}
+          </span>
         </span>
+      );
+    });
+
+    const needsSpace = wordIdx < fullReference.split(' ').length - 1;
+    if (needsSpace) {
+      const spaceChar = ' ';
+      const typedChar = typed[charCounter];
+      const spaceStyle =
+        typedChar === spaceChar
+          ? 'text-accentText'
+          : typed.length > charCounter
+          ? 'text-red-400'
+          : 'text-accent';
+      const showCaret = charCounter === typed.length;
+
+      chars.push(
+        <span key={`${wordIdx}-space`} className="relative inline-block whitespace-pre">
+          <span className={`${spaceStyle} invisible`}>{spaceChar}</span>
+          <span className={`${spaceStyle} absolute inset-0`}>
+            {spaceChar}
+            {showCaret && (
+              <span className="absolute left-0 top-0 w-[1px] h-full bg-accentText animate-caret" />
+            )}
+          </span>
+        </span>
+      );
+      charCounter++;
+    }
+
+    return (
+      <span key={wordIdx} className="flex gap-[2px] flex-row flex-wrap">
+        {chars}
       </span>
-    ));
-  };
+    );
+  });
+
+  return <div className="w-full flex flex-wrap gap-x-1">{wordElements}</div>;
+};
 
   return (
     <div className="mt-16 flex flex-col items-center px-5 pt-8">
       <p className="mb-2 text-2xl font-bold text-accent ml-auto">
-        15
+        {countdown}
       </p>
       <div className="w-full flex h-[25vh] rounded-2xl bg-overlay gap-12 px-10">
         <div className="flex flex-col justify-center text-left text-5xl font-bold gap-12">
@@ -136,16 +206,27 @@ export default function RaceTypingBox({ difficulty = 'medium' }) {
           <RiRobot2Line />
         </div>
       </div>
+
       <div
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="h-[25vh] mt-8 px-10 py-10 rounded-2xl bg-overlay text-2xl flex items-center flex-wrap gap-x-2 gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-center w-full"
-        style={{ minHeight: '150px' }}
+        className="mt-4 px-10 py-6 rounded-2xl bg-overlay text-2xl flex flex-col gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-left w-full min-h-[100px]"
       >
         {renderSentence(userInput)}
-        <div className="w-full mt-4 opacity-50">{renderSentence(botText)}</div>
+        <div className="w-full opacity-50">{renderSentence(botText)}</div>
+
+        <style>{`
+          @keyframes caret-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+          }
+          .animate-caret {
+            animation: caret-blink 1s steps(1) infinite;
+          }
+        `}</style>
       </div>
+
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default function RaceStarting({userID}) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
-  const [selectedTime, setSelectedTime] = useState(null);
+  const [wordCount, setSelectedWordCount] = useState(15);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +23,12 @@ export default function RaceStarting({userID}) {
   }, []);
 
   const startRace = () => {
-    navigate('/race', { state: { difficulty } });
+    navigate('/race', { 
+      state: { 
+        difficulty,
+        wordCount,
+     } 
+    });
   };
 
   return (
@@ -45,7 +50,7 @@ export default function RaceStarting({userID}) {
         {/* Difficulty Selection */}
         <div className="bg-overlay text-md w-8rem h-[6vh] rounded-2xl px-8 flex items-center gap-10 py-1">
           <p className="text-accentText mr-10">difficulty</p>
-          {['easy', 'medium', 'hard'].map((label) => (
+          {['easy', 'medium', 'hard', 'expert'].map((label) => (
             <button
               key={label}
               onClick={() => setDifficulty(label)}
@@ -61,15 +66,15 @@ export default function RaceStarting({userID}) {
         {/* Word Count Selection */}
         <div className="bg-overlay mb-6 text-md w-8rem h-[6vh] rounded-2xl px-8 flex items-center gap-10 py-1">
           <p className="text-accentText mr-24">words</p>
-          {[15, 30, 60].map((time) => (
+          {[15, 30, 60].map((count) => (
             <button
-              key={time}
-              onClick={() => setSelectedTime(time)}
+              key={count}
+              onClick={() => setSelectedWordCount(count)}
               className={`mr-6 hover:text-accent ${
-                selectedTime === time ? 'text-accent' : 'text-accentText'
+                wordCount === count ? 'text-accent' : 'text-accentText'
               }`}
             >
-              {time}
+              {count}
             </button>
           ))}
         </div>
