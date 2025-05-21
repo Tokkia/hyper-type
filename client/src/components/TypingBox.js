@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import sentencesData from '../assets/sentences.json';
 import { MdReplay } from "react-icons/md";
 import { calculateWpmAndAccuracy } from '../utils/calculateMetrics';
+import axios from 'axios';
 
 export default function TypingBox() {
   const [sentences, setSentences] = useState([]);
@@ -36,7 +37,9 @@ export default function TypingBox() {
 
         const { wpm, accuracy } = calculateWpmAndAccuracy(fullTypedText, referenceText, totalTimeInSeconds);
 
-        console.log('WPM:', wpm, 'Accuracy:', accuracy);
+        saveTypingSession(wpm, accuracy, totalTimeInSeconds);
+
+        console.log('WPM:', wpm, 'Accuracy:', accuracy, 'Total Time;', totalTimeInSeconds);
         navigate('/typingresults', { state: { wpm, accuracy } });
       }
     }, 1000);
@@ -99,6 +102,22 @@ export default function TypingBox() {
       setUserInput(prev => prev.slice(0, -1));
     } else if (e.key === 'Tab') {
       e.preventDefault();
+    }
+  };
+
+  const saveTypingSession = async (wpm, accuracy, timer) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+  
+    try {
+      await axios.post(
+        'http://localhost:5001/api/sessions/save',
+        { wpm, accuracy, timer },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log('Session saved successfully');
+    } catch (error) {
+      console.error('Error saving session:', error);
     }
   };
 
