@@ -17,10 +17,13 @@ const getCharDelay = (wpm) => {
 };
 
 export default function RaceTypingBox({ difficulty, wordCount }) {
+  const [totalChars, setTotalChars] = useState(1);
   const [countdown, setCountdown] = useState(wordCount);
   const [sentences, setSentences] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [botText, setBotText] = useState('');
+  const userProgress = Math.min((userInput.length / totalChars) * 100, 100);
+  const botProgress = Math.min((botText.length / totalChars) * 100, 100);
   const inputRef = useRef(null);
   const botIntervalRef = useRef(null);
   const [botDifficulty] = useState(difficulty);
@@ -42,19 +45,22 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
     return () => clearInterval(botIntervalRef.current);
   }, [sentences, botDifficulty]);
   
+  const lastCountdownRef = useRef(countdown);
+
   useEffect(() => {
     const correctWords = countCorrectWords(userInput);
     const newCountdown = wordCount - correctWords;
-    if (newCountdown !== countdown) {
+
+    if (newCountdown !== lastCountdownRef.current) {
+      lastCountdownRef.current = newCountdown;
       setCountdown(newCountdown);
 
       if (newCountdown <= 0) {
         clearInterval(botIntervalRef.current);
-        setTimeout(() => navigate('/raceresults'), 500);
+        setTimeout(() => navigate('/raceresults', { state: { result: 'win' } }), 500);
       }
     }
-  }, [userInput]); // Run this every time userInput changes
-
+  }, [userInput]);
 
   const countCorrectWords = (input) => {
     const userWords = input.trim().split(/\s+/);
@@ -96,10 +102,13 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
       }
     }
 
+    const fullText = sentenceArray.join(' ');
     setSentences(sentenceArray);
+    setTotalChars(fullText.length);
     setUserInput('');
     setBotText('');
   };
+
 
   const handleKeyDown = (e) => {
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
@@ -121,6 +130,12 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
     botIntervalRef.current = setInterval(() => {
       if (i >= fullText.length) {
         clearInterval(botIntervalRef.current);
+
+        const correctWords = countCorrectWords(userInput);
+        if (correctWords < wordCount) {
+          setTimeout(() => navigate('/raceresults', { state: { result: 'lose' } }), 500);
+        }
+
         return;
       }
       typed += fullText[i];
@@ -196,25 +211,44 @@ const renderSentence = (typedInput) => {
 };
 
   return (
-    <div className="mt-16 flex flex-col items-center px-5 pt-8">
+    <div className="mt-8 flex flex-col items-center px-5 pt-8">
       <p className="mb-2 text-2xl font-bold text-accent ml-auto">
         {countdown}
       </p>
-      <div className="w-full flex h-[25vh] rounded-2xl bg-overlay gap-12 px-10">
-        <div className="flex flex-col justify-center text-left text-5xl font-bold gap-12">
-          <FaRegUser />
-          <RiRobot2Line />
+      <div className="w-full flex flex-col rounded-2xl py-10 bg-overlay gap-12 px-10">
+        <div className="flex flex-col justify-center gap-6 w-full">
+          {/* User row */}
+          <div className="flex items-center gap-4">
+            <FaRegUser className="text-4xl" />
+            <div className="flex-1 h-4 rounded-full bg-background overflow-hidden relative">
+              <div
+                className="absolute top-0 left-0 h-full bg-accentText transition-all"
+                style={{ width: `${userProgress}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <RiRobot2Line className="text-4xl" />
+            <div className="flex-1 h-4 rounded-full bg-background overflow-hidden relative">
+              <div
+                className="absolute top-0 left-0 h-full bg-accent opacity-50 transition-all"
+                style={{ width: `${botProgress}%` }}
+              />
+            </div>
+          </div>
+          <div className="w-full opacity-50">{renderSentence(botText)}</div>
         </div>
       </div>
+      
 
       <div
         tabIndex="0"
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        className="mt-4 px-10 py-6 rounded-2xl bg-overlay text-2xl flex flex-col gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-left w-full min-h-[100px]"
+        className="mt-4 px-10 py-10 rounded-2xl bg-overlay text-xl flex flex-col gap-y-3 outline-none select-none cursor-text whitespace-pre-wrap text-left w-full min-h-[100px]"
       >
         {renderSentence(userInput)}
-        <div className="w-full opacity-50">{renderSentence(botText)}</div>
 
         <style>{`
           @keyframes caret-blink {
