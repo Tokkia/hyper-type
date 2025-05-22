@@ -41,6 +41,7 @@ export default function NavBar() {
     setIsLoggedIn(false);
     setDropdownOpen(false);
     navigate('/loginandregister');
+    navigate(0);
   };
 
   return (
