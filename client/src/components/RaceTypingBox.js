@@ -4,6 +4,7 @@ import sentencesData from '../assets/sentences.json';
 import { FaRegUser } from "react-icons/fa";
 import { RiRobot2Line } from "react-icons/ri";
 import { calculateWpmAndAccuracy } from '../utils/calculateMetrics';
+import axios from 'axios';
 
 const botSettings = {
   easy: { wpm: 45 },
@@ -52,7 +53,7 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
   const lastCountdownRef = useRef(countdown);
 
   useEffect(() => {
-    const correctWords = countCorrectWords(userInput);
+    const correctWords = countCorrectWords(userInputRef.current);
     const newCountdown = wordCount - correctWords;
 
     if (newCountdown !== lastCountdownRef.current) {
@@ -61,23 +62,36 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
 
       if (newCountdown <= 0) {
         clearInterval(botIntervalRef.current);
-
-        const fullTyped = userInput;
+      
+        const fullTyped = userInputRef.current;
         const reference = sentences.join(' ');
-        const duration = (Date.now() - startTimeRef.current) / 1000;
-
-        console.log('Typed:', JSON.stringify(fullTyped));
-        console.log('Reference:', JSON.stringify(reference));
-        console.log('Duration (s):', duration);
-
+        const duration = (Date.now() - startTime) / 1000;
+      
         const { wpm, accuracy } = calculateWpmAndAccuracy(fullTyped, reference, duration);
-
-        setTimeout(() => {
+      
+        (async () => {
+          const token = localStorage.getItem('token');
+          if (token) {
+            try {
+              await axios.post('http://localhost:5001/api/race/save', {
+                wpm,
+                accuracy,
+                difficulty: botDifficulty,
+                wordCount,
+              }, {
+                headers: { Authorization: token },
+              });
+              console.log('✅ Race session saved');
+            } catch (err) {
+              console.error('❌ Error saving race session', err.response?.data || err.message);
+            }
+          }
+      
           navigate('/raceresults', {
             state: { result: 'win', wpm, accuracy }
           });
-        }, 500);
-      }
+        })();
+      }      
     }
   }, [userInput]);
 
@@ -158,25 +172,39 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
       if (i >= fullText.length) {
         clearInterval(botIntervalRef.current);
 
-        const correctWords = countCorrectWords(userInput);
+        const correctWords = countCorrectWords(userInputRef.current);
         if (correctWords < wordCount) {
           const fullTyped = userInputRef.current;
           const reference = sentences.join(' ');
-          const duration = (Date.now() - startTimeRef.current) / 1000;
-
-          console.log('Typed:', JSON.stringify(fullTyped));
-          console.log('Reference:', JSON.stringify(reference));
-          console.log('Duration (s):', duration);
-
+          let endTime = Date.now();
+          let startTime = startTimeRef.current || endTime; // fallback to endTime if undefined
+          const duration = (endTime - startTime) / 1000;
+        
           const { wpm, accuracy } = calculateWpmAndAccuracy(fullTyped, reference, duration);
-
-          setTimeout(() => {
+        
+          (async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+              try {
+                await axios.post('http://localhost:5001/api/race/save', {
+                  wpm,
+                  accuracy,
+                  difficulty: botDifficulty,
+                  wordCount,
+                }, {
+                  headers: { Authorization: token },
+                });
+                console.log('✅ Race session saved');
+              } catch (err) {
+                console.error('❌ Error saving race session', err.response?.data || err.message);
+              }
+            }
+        
             navigate('/raceresults', {
               state: { result: 'lose', wpm, accuracy }
             });
-          }, 500);
-        }
-
+          })();
+        }        
         return;
       }
       typed += fullText[i];
