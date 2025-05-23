@@ -15,8 +15,10 @@ export default function TypingBox() {
   const [endTime, setEndTime] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const inputRef = useRef(null);
-  // const timerRef = useRef(null);
+  const timerRef = useRef(null);
   const navigate = useNavigate();
+  const typedInputsRef = useRef([]);
+  const userInputRef = useRef('');
 
   useEffect(() => {
     initSentences();
@@ -24,27 +26,32 @@ export default function TypingBox() {
 
   useEffect(() => {
     if (!isRunning || !endTime) return;
-    const interval = setInterval(() => {
+  
+    timerRef.current = setInterval(() => {
       const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
       setTimeLeft(remaining);
       if (remaining <= 0) {
-        clearInterval(interval);
+        clearInterval(timerRef.current);
         setIsRunning(false);
-        
-        const fullTypedText = typedInputs.join('') + userInput;
+      
+        const completedInputs = [...typedInputsRef.current, userInputRef.current];
+        const fullTypedText = completedInputs.join('');
         const referenceText = sentences.join('');
         const totalTimeInSeconds = (endTime - startTime) / 1000;
-
+      
+        console.log('Typed:', fullTypedText);
+        console.log('Reference:', referenceText);
+      
         const { wpm, accuracy } = calculateWpmAndAccuracy(fullTypedText, referenceText, totalTimeInSeconds);
-
+        console.log('WPM:', wpm, 'Accuracy:', accuracy, 'Total Time:', totalTimeInSeconds);
+      
         saveTypingSession(wpm, accuracy, totalTimeInSeconds);
-
-        console.log('WPM:', wpm, 'Accuracy:', accuracy, 'Total Time;', totalTimeInSeconds);
-        navigate('/typingresults', { state: { wpm, accuracy } });
+        navigate('/typingresults', { state: { wpm, accuracy, time: totalTimeInSeconds } });
       }
     }, 1000);
-    return () => clearInterval(interval);
-  }, [isRunning, endTime, navigate, typedInputs, userInput, sentences, startTime]);
+  
+    return () => clearInterval(timerRef.current);
+  }, [isRunning, endTime]);
 
   const getRandomSentence = () => {
     const index = Math.floor(Math.random() * sentencesData.data.length);
@@ -60,6 +67,9 @@ export default function TypingBox() {
     setIsRunning(false);
     setStartTime(null);
     setEndTime(null);
+    if (timerRef.current) {
+        clearInterval(timerRef.current);
+    }
   };
 
   const startTest = (duration) => {
@@ -93,15 +103,20 @@ export default function TypingBox() {
 
         setSentences(newSentences);
         setTypedInputs(newTypedInputs);
+        typedInputsRef.current = newTypedInputs;
         setUserInput('');
+        userInputRef.current = '';
         setCurrentIndex(Math.min(newTypedInputs.length, 2)); // Always between 0 and 2
       } else {
         setUserInput(updated);
+        userInputRef.current = updated;
       }
     } else if (e.key === 'Backspace') {
-      setUserInput(prev => prev.slice(0, -1));
+        const newInput = userInput.slice(0, -1);
+        setUserInput(newInput);
+        userInputRef.current = newInput;
     } else if (e.key === 'Tab') {
-      e.preventDefault();
+        e.preventDefault();
     }
   };
 
