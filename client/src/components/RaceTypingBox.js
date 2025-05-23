@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import sentencesData from '../assets/sentences.json';
 import { FaRegUser } from "react-icons/fa";
 import { RiRobot2Line } from "react-icons/ri";
+import { calculateWpmAndAccuracy } from '../utils/calculateMetrics';
 
 const botSettings = {
   easy: { wpm: 45 },
@@ -28,6 +29,9 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
   const botIntervalRef = useRef(null);
   const [botDifficulty] = useState(difficulty);
   const navigate = useNavigate();
+  const [startTime, setStartTime] = useState(null);
+  const startTimeRef = useRef(null);
+  const userInputRef = useRef('');
 
   useEffect(() => {
     setCountdown(wordCount);
@@ -57,7 +61,22 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
 
       if (newCountdown <= 0) {
         clearInterval(botIntervalRef.current);
-        setTimeout(() => navigate('/raceresults', { state: { result: 'win' } }), 500);
+
+        const fullTyped = userInput;
+        const reference = sentences.join(' ');
+        const duration = (Date.now() - startTimeRef.current) / 1000;
+
+        console.log('Typed:', JSON.stringify(fullTyped));
+        console.log('Reference:', JSON.stringify(reference));
+        console.log('Duration (s):', duration);
+
+        const { wpm, accuracy } = calculateWpmAndAccuracy(fullTyped, reference, duration);
+
+        setTimeout(() => {
+          navigate('/raceresults', {
+            state: { result: 'win', wpm, accuracy }
+          });
+        }, 500);
       }
     }
   }, [userInput]);
@@ -111,12 +130,20 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
 
 
   const handleKeyDown = (e) => {
+    if (!startTimeRef.current) {
+      const now = Date.now();
+      setStartTime(now);
+      startTimeRef.current = now;
+    }
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-      // Ensure apostrophes are plain single quotes
       const char = e.key === '’' ? "'" : e.key;
-      setUserInput(prev => prev + char);
+      const newInput = userInput + char;
+      setUserInput(newInput);
+      userInputRef.current = newInput;
     } else if (e.key === 'Backspace') {
-      setUserInput(prev => prev.slice(0, -1));
+      const newInput = userInput.slice(0, -1);
+      setUserInput(newInput);
+      userInputRef.current = newInput;
     } else if (e.key === 'Tab') {
       e.preventDefault();
     }
@@ -133,7 +160,21 @@ export default function RaceTypingBox({ difficulty, wordCount }) {
 
         const correctWords = countCorrectWords(userInput);
         if (correctWords < wordCount) {
-          setTimeout(() => navigate('/raceresults', { state: { result: 'lose' } }), 500);
+          const fullTyped = userInputRef.current;
+          const reference = sentences.join(' ');
+          const duration = (Date.now() - startTimeRef.current) / 1000;
+
+          console.log('Typed:', JSON.stringify(fullTyped));
+          console.log('Reference:', JSON.stringify(reference));
+          console.log('Duration (s):', duration);
+
+          const { wpm, accuracy } = calculateWpmAndAccuracy(fullTyped, reference, duration);
+
+          setTimeout(() => {
+            navigate('/raceresults', {
+              state: { result: 'lose', wpm, accuracy }
+            });
+          }, 500);
         }
 
         return;
