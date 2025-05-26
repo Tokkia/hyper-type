@@ -5,10 +5,10 @@ import { FaRegUser } from "react-icons/fa";
 import { RiRobot2Line } from "react-icons/ri";
 
 const botSettings = {
-  easy: { wpm: 45 },
-  medium: { wpm: 80 },
-  hard: { wpm: 115 },
-  expert: { wpm: 150 },
+  easy: { wpm: 40 },
+  medium: { wpm: 65 },
+  hard: { wpm: 90 },
+  expert: { wpm: 130 },
 };
 
 const getCharDelay = (wpm) => {
