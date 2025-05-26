@@ -64,15 +64,14 @@ const UserProfile = ({ userId }) => {
   let labels = [];
 
   if (timeframe === 'week') {
-    const start = today.startOf('week');
-    labels = Array.from({ length: 7 }, (_, i) => start.add(i, 'day').format('dddd'));
+    labels = Array.from({ length: 7 }, (_, i) =>
+      today.subtract(6 - i, 'day').format('MMM D')
+    );
   }
 
   if (timeframe === 'month') {
-    const startOfMonth = today.startOf('month');
-    const daysInMonth = today.daysInMonth();
-    labels = Array.from({ length: daysInMonth }, (_, i) =>
-      startOfMonth.add(i, 'day').format('MMM D')
+    labels = Array.from({ length: 30 }, (_, i) =>
+      today.subtract(29 - i, 'day').format('MMM D')
     );
   }
 
@@ -136,15 +135,16 @@ const UserProfile = ({ userId }) => {
           autoSkip: false,
           callback: function (val, index) {
             const label = this.getLabelForValue(val);
+            
             if (timeframe === 'week') {
-              return ['Sunday', 'Wednesday', 'Saturday'].includes(label) ? label : '';
+              return index === 0 || index === 3 || index === 6 ? label : '';
             }
+
             if (timeframe === 'month') {
-              const total = this.getLabels().length;
-              const middle = Math.floor(total / 2);
-              return index === 0 || index === middle || index === total - 1 ? label : '';
+              return index === 0 || index === 15 || index === 29 ? label : '';
             }
-            return label;
+
+            return '';
           }
         },
         title: {
