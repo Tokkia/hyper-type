@@ -2,8 +2,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
 const router = express.Router();
+const verifyToken = require('../utils/verifyToken');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -44,6 +44,10 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+router.get('/validate', verifyToken, (req, res) => {
+    res.status(200).json({ valid: true });
 });
 
 module.exports = router;

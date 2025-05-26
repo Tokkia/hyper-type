@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+
 import './App.css';
 import Home from './pages/Home';
 import TypingResults from './pages/TypingResults';
@@ -9,9 +11,37 @@ import RaceResults from './pages/RaceResults';
 import NavBar from './components/NavBar';
 import TypingBox from './components/TypingBox';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import axios from 'axios';
 
 function App() {
-  const isLoggedIn = !!localStorage.getItem('token');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const validateToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsLoggedIn(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        await axios.get('http://localhost:5001/api/auth/validate', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.error('Token invalid or expired:', err.response?.data?.message);
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    validateToken();
+  }, []);
 
   return (
     <Router>

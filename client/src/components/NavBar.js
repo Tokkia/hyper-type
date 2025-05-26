@@ -4,6 +4,7 @@ import { FaRegUser } from "react-icons/fa";
 import { PiGameController } from "react-icons/pi";
 import { TbKeyboard } from "react-icons/tb";
 import logo from '../assets/logo.png';
+import axios from 'axios';
 
 export default function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,15 +15,31 @@ export default function NavBar() {
   const dropdownRef = useRef();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUsername = localStorage.getItem('username');
-    if (token && storedUsername) {
-      setIsLoggedIn(true);
-      setUsername(storedUsername);
-    } else {
-      setIsLoggedIn(false);
-      setUsername('');
-    }
+    const validateToken = async () => {
+      const token = localStorage.getItem('token');
+      const storedUsername = localStorage.getItem('username');
+  
+      if (!token || !storedUsername) {
+        setIsLoggedIn(false);
+        setUsername('');
+        return;
+      }
+  
+      try {
+        await axios.get('http://localhost:5001/api/auth/validate', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsLoggedIn(true);
+        setUsername(storedUsername);
+      } catch (err) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        setIsLoggedIn(false);
+        setUsername('');
+      }
+    };
+  
+    validateToken();
   }, [location]);
 
   useEffect(() => {
