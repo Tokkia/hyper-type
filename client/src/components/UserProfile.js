@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { Line } from 'react-chartjs-2';
 import { FaRegUser } from "react-icons/fa";
-
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,6 +14,8 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+
+dayjs.extend(utc);
 
   ChartJS.register(
   CategoryScale,
@@ -78,10 +80,11 @@ const UserProfile = () => {
 
   const groupedResults = {};
   results.forEach(r => {
-    if (r.time !== timerLength) return; // filter by test duration
+    if (Number(r.time) !== timerLength) return; // filter by test duration
 
-    const date = dayjs(r.timestamp);
-    let key = timeframe === 'week' ? date.format('dddd') : date.format('MMM D');
+    if(!r.timestamp) return;
+    const date = dayjs(r.timestamp).utc().local();
+    const key = date.format('MMM D');
 
     if (!groupedResults[key]) groupedResults[key] = [];
     groupedResults[key].push(metric === 'wpm' ? r.wpm : r.accuracy);
@@ -89,7 +92,7 @@ const UserProfile = () => {
 
   const data = labels.map(label => {
     const values = groupedResults[label];
-    if (!values) return null;
+    if (!values || values.length === 0) return 0;
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
     return Math.round(avg * 10) / 10;
   });

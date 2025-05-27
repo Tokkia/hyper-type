@@ -37,7 +37,7 @@ exports.saveResult = async (req, res) => {
       wpm,
       accuracy,
       time,
-      timestamp: timestamp || new Date()
+      timestamp: new Date()
     });
 
     await result.save();
