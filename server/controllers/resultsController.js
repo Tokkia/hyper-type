@@ -17,8 +17,18 @@ exports.getResultsByUser = async (req, res) => {
 exports.saveResult = async (req, res) => {
   try {
     const { userId, wpm, accuracy, time, timestamp } = req.body;
+    
+    // ✅ Add this debug log BEFORE the if-check
+    console.log('📥 Received POST /api/results with:', {
+      userId,
+      wpm,
+      accuracy,
+      time,
+      timestamp
+    });
 
     if (!userId || wpm == null || accuracy == null || time == null) {
+      console.log('❌ Missing one or more required fields');
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -27,7 +37,7 @@ exports.saveResult = async (req, res) => {
       wpm,
       accuracy,
       time,
-      timestamp: timestamp || new Date()
+      timestamp: new Date()
     });
 
     await result.save();

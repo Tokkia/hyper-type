@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { Line } from 'react-chartjs-2';
 import { FaRegUser } from "react-icons/fa";
-
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,7 +15,9 @@ import {
   Legend
 } from 'chart.js';
 
-ChartJS.register(
+dayjs.extend(utc);
+
+  ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
@@ -25,7 +27,8 @@ ChartJS.register(
   Legend
 );
 
-const UserProfile = ({ userId }) => {
+const UserProfile = () => {
+  const userId = localStorage.getItem('userId');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [results, setResults] = useState([]);
@@ -48,7 +51,7 @@ const UserProfile = ({ userId }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const res = await axios.get(`http://localhost:5000/api/results/${userId}`);
+        const res = await axios.get(`http://localhost:5001/api/results/${userId}`);
         setResults(res.data);
       } catch (err) {
         console.error('Failed to load user results', err);
@@ -77,10 +80,11 @@ const UserProfile = ({ userId }) => {
 
   const groupedResults = {};
   results.forEach(r => {
-    if (r.time !== timerLength) return; // filter by test duration
+    if (Number(r.time) !== timerLength) return; // filter by test duration
 
-    const date = dayjs(r.timestamp);
-    let key = timeframe === 'week' ? date.format('dddd') : date.format('MMM D');
+    if(!r.timestamp) return;
+    const date = dayjs(r.timestamp).utc().local();
+    const key = date.format('MMM D');
 
     if (!groupedResults[key]) groupedResults[key] = [];
     groupedResults[key].push(metric === 'wpm' ? r.wpm : r.accuracy);
@@ -88,7 +92,7 @@ const UserProfile = ({ userId }) => {
 
   const data = labels.map(label => {
     const values = groupedResults[label];
-    if (!values) return null;
+    if (!values || values.length === 0) return 0;
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
     return Math.round(avg * 10) / 10;
   });
