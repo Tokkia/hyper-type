@@ -15,7 +15,7 @@ import {
   Legend
 } from 'chart.js';
 
-ChartJS.register(
+  ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
@@ -25,7 +25,8 @@ ChartJS.register(
   Legend
 );
 
-const UserProfile = ({ userId }) => {
+const UserProfile = () => {
+  const userId = localStorage.getItem('userId');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [results, setResults] = useState([]);
@@ -48,7 +49,7 @@ const UserProfile = ({ userId }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const res = await axios.get(`http://localhost:5000/api/results/${userId}`);
+        const res = await axios.get(`http://localhost:5001/api/results/${userId}`);
         setResults(res.data);
       } catch (err) {
         console.error('Failed to load user results', err);

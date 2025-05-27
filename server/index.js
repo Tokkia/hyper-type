@@ -23,9 +23,11 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes');
 const sessionRoutes = require('./routes/sessions');
 const raceSessionRoutes = require('./routes/raceSessions');
+const topResults = require('./routes/results');
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/race', raceSessionRoutes);
+app.use('/api/results', topResults);
 
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);

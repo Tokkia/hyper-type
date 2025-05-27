@@ -125,11 +125,14 @@ export default function TypingBox() {
     if (!token) return;
   
     try {
-      await axios.post(
-        'http://localhost:5001/api/sessions/save',
-        { wpm, accuracy, timer },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const userId = localStorage.getItem('userId');
+
+      await axios.post('http://localhost:5001/api/results', {
+        userId,
+        wpm,
+        accuracy,
+        time: timer,
+      });
       console.log('Session saved successfully');
     } catch (error) {
       console.error('Error saving session:', error);
