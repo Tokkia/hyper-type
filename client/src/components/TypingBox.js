@@ -85,8 +85,12 @@ export default function TypingBox() {
   const handleKeyDown = (e) => {
     if (!isRunning) return;
 
-    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-      const updated = userInput + e.key;
+      let key = e.key;
+      if (key === '’' || key === '‘') key = `'`;
+      if (key === '“' || key === '”') key = `"`;
+
+    if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
+      const updated = userInput + key;
       const currentSentence = sentences[currentIndex];
 
       if (updated.length === currentSentence.length) {
@@ -111,11 +115,11 @@ export default function TypingBox() {
         setUserInput(updated);
         userInputRef.current = updated;
       }
-    } else if (e.key === 'Backspace') {
+    } else if (key === 'Backspace') {
         const newInput = userInput.slice(0, -1);
         setUserInput(newInput);
         userInputRef.current = newInput;
-    } else if (e.key === 'Tab') {
+    } else if (key === 'Tab') {
         e.preventDefault();
     }
   };
@@ -232,7 +236,7 @@ export default function TypingBox() {
   };  
 
   return (
-    <div className="flex flex-col items-center px-5 pt-32">
+    <div className="flex flex-col items-center px-5 pt-56">
       {/* Timer controls */}
       <div className="ml-auto h-[4vh] w-90 flex flex-row items-center mb-4">
         {isRunning && (

@@ -72,7 +72,7 @@ export default function LoginAndRegister() {
             onChange={handleRegisterChange}
             required
           />
-          <button type="submit" className="text-2xl bg-accent text-overlay font-bold p-3 rounded-2xl">
+          <button type="submit" className="text-xl bg-accent text-overlay font-bold p-3 rounded-2xl">
             register
           </button>
         </form>
