@@ -65,12 +65,12 @@ export default function NavBar() {
     <nav className="flex justify-between items-center py-5 px-10">
       <ul className="flex items-center gap-8">
         <li>
-          <Link to="/" className="">
+          <Link to="/typing" className="">
             <img src={logo} alt="Logo" className="h-12 w-auto" />
           </Link>
         </li>
         <li>
-          <Link to="/" className="text-accent hover:text-accentText">
+          <Link to="/typing" className="text-accent hover:text-accentText">
             <TbKeyboard className="text-3xl font-bold" />
           </Link>
         </li>

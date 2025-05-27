@@ -48,7 +48,7 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/hyper-type" element={isLoggedIn ? <Home /> : <Navigate to="/loginandregister" replace />} />
-        <Route path="/loginandregister" element={!isLoggedIn ? <LoginAndRegister /> : <Navigate to="/" replace />} />
+        <Route path="/loginandregister" element={!isLoggedIn ? <LoginAndRegister /> : <Navigate to="/typing" replace />} />
         <Route path="/typingresults" element={<TypingResults />} />
         <Route path="/userprofile" element={<UserProfile />} />
         <Route path="/racestarting" element={<RaceStarting />} />
